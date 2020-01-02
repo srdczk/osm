@@ -12,7 +12,7 @@ public class Config {
 
     public static final double SCALE = 25.0;
 
-    private static int pedId = 0;
+    public static int pedId = 0;
 
     // 通过行人 id  索引行人
     public static final HashMap<Integer, Ped> pedMap = new HashMap<>();

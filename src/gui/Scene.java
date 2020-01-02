@@ -10,6 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
+import model.Ped;
 import model.Space;
 import model.Wall;
 import params.Config;
@@ -63,6 +64,11 @@ public class Scene implements Initializable {
         return new KeyFrame(duration, e -> {
             removeAll();
             for (Wall wall : space.getWalls()) drawWall(graphicsContext, wall);
+            for (Ped ped : space.getPeds()) { drawPed(graphicsContext, ped); }
+            for (Ped ped : space.getPeds()) {
+                ped.updateDir();
+                ped.move();
+            }
         });
     }
 

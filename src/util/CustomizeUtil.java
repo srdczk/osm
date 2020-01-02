@@ -120,13 +120,13 @@ public class CustomizeUtil {
     public static double getField(Vector vector) {
         // 计算场域的值
         if (vector.getX() <= 17) {
-            return -vector.getX();
+            return 1000000 - vector.getX();
         } else if (vector.getY() >= 8) {
-            return -vector.getY();
+            return 200000 - vector.getY();
         }
         int a = (int) ((vector.getX() - 17.0) * 10.0), b = (int) ((8.0 - vector.getY()) * 10.0);
         if (a > 29 || b > 29) return 100000;
-        return Space.sff[a][b] * 50;
+        return 400000 + Space.sff[a][b] * 50;
     }
 
     public static double calculateFromPed(Vector vector, Ped ped) {
