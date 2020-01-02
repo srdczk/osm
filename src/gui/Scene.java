@@ -10,11 +10,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
-import model.Ped;
+import model.Space;
+import model.Wall;
 import params.Config;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static util.CustomizeUtil.*;
 
 public class Scene implements Initializable {
 
@@ -31,8 +34,7 @@ public class Scene implements Initializable {
 
     private Timeline timeline;
 
-
-    private Ped ped;
+    private Space space;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -41,9 +43,9 @@ public class Scene implements Initializable {
 
     private void initScene() {
         graphicsContext = canvas.getGraphicsContext2D();
-        ped = new Ped(2, 45);
         canvas.setScaleY(-1);
         canvas.setScaleX(1);
+        space = new Space().init();
         initLoop();
     }
 
@@ -60,8 +62,7 @@ public class Scene implements Initializable {
     private KeyFrame getNextKeyFrame(Duration duration) {
         return new KeyFrame(duration, e -> {
             removeAll();
-            ped.draw(graphicsContext);
-            ped.run();
+            for (Wall wall : space.getWalls()) drawWall(graphicsContext, wall);
         });
     }
 

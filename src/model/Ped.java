@@ -1,45 +1,79 @@
 package model;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+// Created by srdczk on 2020/1/1
 
-import static params.Config.SCALE;
+import static util.CustomizeUtil.*;
+import static params.Config.*;
 
 public class Ped {
 
-    private double x, y;
+    private boolean isGetTarget;
 
-    private int dir = 0;
+    private Vector curPos;
 
-    public Ped(double x, double y) {
-        this.x = x;
-        this.y = y;
+    private Vector dir;
+
+    private double radius;
+
+    private double stepLen;
+    // id 行人索引
+    private int id;
+    // space 指针
+    private Space space;
+
+    public Ped(int id, double x, double y
+            , double sl, double r
+            , double dirX, double dirY
+            , Space space) {
+        this.id = id;
+        curPos = new Vector(x, y);
+        dir = new Vector(dirX, dirY);
+        radius = r;
+        stepLen = sl;
+        this.space = space;
+        isGetTarget = false;
     }
 
-    public void run() {
-        switch (dir) {
-            case 0:
-                x += Math.random() * 2;
-                if (x > 50) dir = 1;
-                break;
-            case 1:
-                y -= Math.random() * 2;
-                if (y < 10) dir = 2;
-                break;
-            case 2:
-                x -= Math.random() * 2;
-                if (x < 10) dir = 3;
-                break;
-            case 3:
-                y += Math.random() * 2;
-                if (y > 50) dir = 0;
-                break;
+    public void move() {
+        Vector target = curPos.newAdd(dir.newMultiply(stepLen));
+        if (canMove(target)) curPos = target;
+    }
+
+    public void updateDir() {
+        // 在 边缘上 取 10 个点
+        double res = Double.MAX_VALUE;
+        Vector resTarget = curPos.newAdd(new Vector(1, 0).multiply(stepLen));
+        Vector begin = new Vector(1, 0).rotate((int)(Math.random() * 360 / Q));
+        for (int i = 0; i < Q; i++) {
+            Vector vector = curPos.newAdd(begin.rotate(360 / Q).newMultiply(stepLen));
+            double field = 0;
+            for (Ped ped : space.getPeds()) {
+                if (!ped.equals(this)) field += calculateFromPed(vector, this);
+            }
+            for (Wall wall : space.getWalls()) {
+                if (wall.isIn(vector, R)) field += calculateFromWall(vector, wall);
+            }
+            field += getField(vector);
+            if (canMove(vector) && field < res) {
+                res = field;
+                resTarget = vector;
+            }
         }
+        // dir  计算
+        dir = resTarget.normalize(curPos);
+
     }
 
-    public void draw(GraphicsContext graphicsContext) {
-        graphicsContext.setFill(Color.RED);
-        graphicsContext.fillOval(x * SCALE - 1.5 * SCALE, y * SCALE - 1.5 * SCALE, 3 * SCALE, 3 * SCALE);
+    public double getRadius() {
+        return radius;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Vector getCurPos() {
+        return curPos;
     }
 
 }
