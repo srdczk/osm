@@ -109,4 +109,8 @@ public class Vector {
     public double getY() {
         return y;
     }
+
+    public void setX(double x) {
+        this.x = x;
+    }
 }

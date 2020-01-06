@@ -24,14 +24,22 @@ public class Space {
 
     public Space init() {
         add(new Wall(3.5, 5, 6.5, 5));
-        add(new Wall(3.5, 6.5, 5, 6.5));
-        add(new Wall(5, 6.5, 5,  11.6));
-        add(new Wall(5, 11.6, 8.5, 11.6));
         add(new Wall(6.5, 5, 6.5, 10.1));
-        add(new Wall(6.5, 10.1, 7, 10.1));
-        add(new Wall(7, 10.1, 7, 5));
-        add(new Wall(7, 5, 8.5, 5));
-        add(new Wall(8.5, 11.6, 8.5, 6.5));
+        add(new Wall(6.5, 10.1, 7.0, 10.1));
+        add(new Wall(7.0, 10.1, 7.0, 6.5));
+        add(new Wall(3.5, 6.5, 5.0, 6.5));
+        add(new Wall(5.0, 6.5, 5.0, 11.6));
+        add(new Wall(5.0, 11.6, 8.5, 11.6));
+        add(new Wall(8.5, 11.6, 8.5, 5));
+        add(new Wall(8.5, 5, 7, 5));
+        add(new Wall(10, 5, 10, 11.6));
+        add(new Wall(10, 11.6, 13.5, 11.6));
+        add(new Wall(13.5, 11.6, 13.5, 6.5));
+        add(new Wall(10, 5, 13.5, 5));
+        add(new Wall(11.5, 6.5, 11.5, 10.1));
+        add(new Wall(11.5, 10.1, 12.0, 10.1));
+        add(new Wall(12.0, 10.1, 12.0, 5));
+        add(new Wall(11.5, 6.5, 12.0, 6.5));
         for (int i = 0; i < 5; i++) {
             boolean pd = true;
             double x = Math.random() * 1.1 + 3.7

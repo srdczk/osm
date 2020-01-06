@@ -90,7 +90,7 @@ public class Scene implements Initializable {
     }
 
     public void onPrint() {
-//        System.out.println("NIASU");
+        System.out.println("NIASU");
     }
 
 }

@@ -13,6 +13,7 @@
     </Canvas>
     <HBox alignment="TOP_CENTER" spacing="10">
         <children>
+         <Button mnemonicParsing="false" text="Button" />
             <Button fx:id="start" onAction="#onStart">Start</Button>
             <Button fx:id="print" onAction="#onPrint">Print</Button>
             <TextField fx:id="floor" prefHeight="16.0" prefWidth="52.0" />

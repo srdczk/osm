@@ -36,7 +36,11 @@ public class Ped {
 
     public void move() {
         Vector target = curPos.newAdd(dir.newMultiply(stepLen));
-        if (canMove(target)) curPos = target;
+        if (canMove(curPos, target)) curPos = target;
+        if (curPos.getX() >= 6.5 && curPos.getX() <= 7.0
+                && curPos.getY() <= 6.5 && curPos.getY() >= 5.0) {
+            curPos.setX(curPos.getX() + 5.0);
+        }
     }
 
     public void updateDir() {
@@ -54,7 +58,7 @@ public class Ped {
                 if (wall.isIn(vector, R)) field += calculateFromWall(vector, wall);
             }
             field += getField(vector);
-            if (canMove(vector) && field < res) {
+            if (canMove(curPos, vector) && field < res) {
                 res = field;
                 resTarget = vector;
             }

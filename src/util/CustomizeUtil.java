@@ -119,52 +119,93 @@ public class CustomizeUtil {
 
     public static double getField(Vector vector) {
         // 计算场域的值
-        if (vector.getX() <= 5) {
-            return 1000000 - vector.getX() * 100;
+        if (vector.getX() <= 5.0) {
+            return 1500000 - (vector.getX()) * 100;
         }
-        if (vector.getX() >= 5 && vector.getX() <= 6.5
-                && vector.getY() >= 5 && vector.getY() <= 6.5) {
-            int x = (int) ((vector.getX() - 5.0) * 10)
-                    , y = (int) ((6.5 - vector.getY()) * 10);
-            if (x > 14 || y > 14) return 1000000;
+        if (vector.getX() >= 5.0 && vector.getX() <= 6.5
+                && vector.getY() <= 6.5 && vector.getY() >= 5.0) {
+            int x = (int) ((vector.getX() - 5.0) * 10), y = (int) ((6.5 - vector.getY()) * 10);
+            if (x > 14 || y > 14) return 1500000;
+            return 1400000 + 50 * Space.sff[x][y];
+        }
+        if (vector.getX() >= 5.0 && vector.getX() <= 6.5
+                && vector.getY() >= 6.5 && vector.getY() <= 10.1) {
+            return 1400000 - (vector.getY() - 6.5) * 100;
+        }
+        if (vector.getX() >= 5.0 && vector.getX() <= 6.5
+                && vector.getY() >= 10.1 && vector.getY() <= 11.6) {
+            int x = (int) ((vector.getY() - 10.1) * 10), y = (int) ((6.5 - vector.getX()) * 10);
+            if (x > 14 || y > 14) return 1500000;
+            return 1300000 + 50 * Space.sff[x][y];
+        }
+        if (vector.getX() >= 6.5 && vector.getX() <= 7.0
+                && vector.getY() <= 11.6 && vector.getY() >= 10.1) {
+            return 1300000 - (vector.getX() - 6.5) * 100;
+        }
+        if (vector.getX() >= 7.0 && vector.getX() <= 8.5
+                && vector.getY() >= 10.1 && vector.getY() <= 11.6) {
+            int x = (int) ((vector.getX() - 7.0) * 10), y = (int) ((vector.getY() - 10.1) * 10);
+            if (x > 14 || y > 14) return 1500000;
+            return 1200000 + 50 * Space.sff[x][y];
+        }
+        if (vector.getX() >= 7.0 && vector.getX() <= 8.5
+                && vector.getY() <= 10.1 && vector.getY() >= 6.5) {
+            return 1200000 - (10.1 - vector.getY()) * 100;
+        }
+        if (vector.getX() >= 7.0 && vector.getX() <= 8.5
+                && vector.getY() >= 5.0 && vector.getY() <= 6.5) {
+            int x = (int) ((6.5 - vector.getY()) * 10), y = (int) ((vector.getX() - 7.0) * 10);
+            if (x > 14 || y > 14) return 1500000;
+            return 1100000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() <= 7.0 && vector.getX() >= 6.5
+                && vector.getY() <= 6.5 && vector.getY() >= 5.0) {
+            return 1100000 - (7.0 - vector.getX()) * 100;
+        }
+        if (vector.getX() <= 12.0 && vector.getX() >= 11.5
+                && vector.getY() <= 6.5 && vector.getY() >= 5.0) {
+            return 1100000 - (12.0 - vector.getX()) * 100;
+        }
+        if (vector.getX() <= 11.5 && vector.getX() >= 10.0
+                && vector.getY() <= 6.5 && vector.getY() >= 5.0) {
+            int x = (int) ((11.5 - vector.getX()) * 10), y = (int) ((6.5 - vector.getY()) * 10);
+            if (x > 14 || y > 14) return 1500000;
+            return 1000000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() <= 11.5 && vector.getX() >= 10.0
+                && vector.getY() >= 6.5 && vector.getY() <= 10.1) {
+            return 1000000 - (vector.getY() - 6.5) * 100;
+        }
+        if (vector.getX() <= 11.5 && vector.getX() >= 10.0
+                && vector.getY() >= 10.1 && vector.getY() <= 11.6) {
+            int x = (int) ((vector.getY() - 10.1) * 10), y = (int) ((11.5 - vector.getX()) * 10);
+            if (x > 14 || y > 14) return 1500000;
             return 900000 + Space.sff[x][y] * 50;
         }
-        if (vector.getX() >= 5 && vector.getX() <= 6.5
-                && vector.getY() >= 6.5 && vector.getY() <= 10.1) {
-             return 900000 - (vector.getY() - 6.5) * 100;
+        if (vector.getX() >= 11.5 && vector.getX() <= 12.0
+                && vector.getY() >= 10.1 && vector.getY() <= 11.6) {
+            return 900000 - (vector.getX() - 11.5) * 100;
         }
-        if (vector.getX() >= 5 && vector.getX() <= 6.5
-                && vector.getY() >= 10.1) {
-            int x = (int) ((vector.getY() - 10.1) * 10)
-                    , y = (int) ((6.5 - vector.getX()) * 10);
-            if (x > 14 || y > 14) return 1000000;
+        if (vector.getX() >= 12.0 && vector.getX() <= 13.5
+                && vector.getY() >= 10.1 && vector.getY() <= 11.6) {
+            int x = (int) ((vector.getX() - 12.0) * 10), y = (int) ((vector.getY() - 10.1) * 10);
+            if (x > 14 || y > 14) return 1500000;
             return 800000 + Space.sff[x][y] * 50;
         }
-        if (vector.getX() >= 6.5 && vector.getX() <= 7.0) {
-            return 800000 - (vector.getX() - 6.5) * 100;
+        if (vector.getX() >= 12.0 && vector.getX() <= 13.5
+            && vector.getY() <= 10.1 && vector.getY() >= 6.5) {
+            return 800000 - (10.1 - vector.getY()) * 100;
         }
-        if (vector.getX() >= 7 && vector.getX() <= 8.5
-                && vector.getY() <= 11.6 && vector.getY() >= 10.1) {
-            int x = (int) ((vector.getX() - 7.0) * 10)
-                    , y = (int) ((vector.getY() - 10.1) * 10);
-            if (x > 14 || y > 14) return 1000000;
+        if (vector.getX() >= 12.0 && vector.getX() <= 13.5
+                && vector.getY() <= 6.5 && vector.getY() >= 5.0) {
+            int x = (int) ((6.5 - vector.getY()) * 10), y = (int) ((13.5 - vector.getX()) * 10);
+            if (x > 14 || y > 14) return 1500000;
             return 700000 + Space.sff[x][y] * 50;
         }
-        if (vector.getX() >= 7 && vector.getX() <= 8.5
-                && vector.getY() <= 10.1 && vector.getY() >= 6.5) {
-            return 700000 + (vector.getY() - 10.1) * 100;
+        if (vector.getX() >= 13.5) {
+            return 700000 - (vector.getX() - 13.5) * 100;
         }
-        if (vector.getX() >= 7 && vector.getX() <= 8.5
-                && vector.getY() <= 6.5 && vector.getY() >= 5) {
-            int x = (int) ((6.5 - vector.getY()) * 10)
-                    , y = (int) ((8.5 - vector.getX()) * 10);
-            if (x > 14 || y > 14) return 1000000;
-            return 600000 + Space.sff[x][y] * 50;
-        }
-        if (vector.getX() >= 8.5) {
-            return 600000 - (vector.getX() - 8.5) * 100;
-        }
-        return 1000000;
+        return 1500000;
     }
 
     public static double calculateFromPed(Vector vector, Ped ped) {
@@ -193,17 +234,24 @@ public class CustomizeUtil {
         } else return 0;
     }
 
-    public static boolean canMove(Vector target) {
-        // 判断是否能移动到指定位置
-        if (target.getX() <= 5 && target.getY() >= 6.5) {
-            return false;
-        }
+    public static boolean canMove(Vector cur, Vector target) {
+        // pd Enum <--> floor
+        if (target.getY() >= 6.5 && target.getX() <= 5) return false;
         if (target.getY() >= 11.6) return false;
-        if (target.getX() >= 8.5 && target.getY() <= 11.6
-                && target.getY() >= 6.5) return false;
         if (target.getY() <= 5) return false;
-        if (target.getX() <= 7 && target.getX() >= 6.5
-                && target.getY() <= 10.1) return false;
+        if (target.getX() >= 8.5 && target.getX() <= 10) return false;
+        if (target.getX() <= 7.0 && target.getX() >= 6.5
+                && target.getY() <= 10.1 && target.getY() >= 6.5) return false;
+        // 判断 target
+        if ((cur.getX() >= 5 && cur.getX() <= 6.5)
+                && (target.getX() >= 6.5 && target.getY() <= 10.1)) return false;
+        if ((cur.getX() >= 6.5 && cur.getX() <= 7.0 && cur.getY() >= 5 && cur.getY() <= 6.5)
+                && (target.getX() <= 6.5)) return false;
+        if ((cur.getX() <= 12.0 && cur.getX() >= 11.5 && cur.getY() <= 6.5 && cur.getY() >= 5.0)
+                && (target.getX() >= 12.0)) return false;
+        if (target.getY() <= 10.1 && target.getY() >= 6.5
+                && target.getX() <= 12.0 && target.getX() >= 11.5) return false;
+        if (target.getY() >= 6.5 && target.getX() >= 13.5) return false;
         return true;
     }
 
