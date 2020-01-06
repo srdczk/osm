@@ -119,14 +119,52 @@ public class CustomizeUtil {
 
     public static double getField(Vector vector) {
         // 计算场域的值
-        if (vector.getX() <= 17) {
-            return 1000000 - vector.getX();
-        } else if (vector.getY() >= 8) {
-            return 200000 - vector.getY();
+        if (vector.getX() <= 5) {
+            return 1000000 - vector.getX() * 100;
         }
-        int a = (int) ((vector.getX() - 17.0) * 10.0), b = (int) ((8.0 - vector.getY()) * 10.0);
-        if (a > 29 || b > 29) return 100000;
-        return 400000 + Space.sff[a][b] * 50;
+        if (vector.getX() >= 5 && vector.getX() <= 6.5
+                && vector.getY() >= 5 && vector.getY() <= 6.5) {
+            int x = (int) ((vector.getX() - 5.0) * 10)
+                    , y = (int) ((6.5 - vector.getY()) * 10);
+            if (x > 14 || y > 14) return 1000000;
+            return 900000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() >= 5 && vector.getX() <= 6.5
+                && vector.getY() >= 6.5 && vector.getY() <= 10.1) {
+             return 900000 - (vector.getY() - 6.5) * 100;
+        }
+        if (vector.getX() >= 5 && vector.getX() <= 6.5
+                && vector.getY() >= 10.1) {
+            int x = (int) ((vector.getY() - 10.1) * 10)
+                    , y = (int) ((6.5 - vector.getX()) * 10);
+            if (x > 14 || y > 14) return 1000000;
+            return 800000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() >= 6.5 && vector.getX() <= 7.0) {
+            return 800000 - (vector.getX() - 6.5) * 100;
+        }
+        if (vector.getX() >= 7 && vector.getX() <= 8.5
+                && vector.getY() <= 11.6 && vector.getY() >= 10.1) {
+            int x = (int) ((vector.getX() - 7.0) * 10)
+                    , y = (int) ((vector.getY() - 10.1) * 10);
+            if (x > 14 || y > 14) return 1000000;
+            return 700000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() >= 7 && vector.getX() <= 8.5
+                && vector.getY() <= 10.1 && vector.getY() >= 6.5) {
+            return 700000 + (vector.getY() - 10.1) * 100;
+        }
+        if (vector.getX() >= 7 && vector.getX() <= 8.5
+                && vector.getY() <= 6.5 && vector.getY() >= 5) {
+            int x = (int) ((6.5 - vector.getY()) * 10)
+                    , y = (int) ((8.5 - vector.getX()) * 10);
+            if (x > 14 || y > 14) return 1000000;
+            return 600000 + Space.sff[x][y] * 50;
+        }
+        if (vector.getX() >= 8.5) {
+            return 600000 - (vector.getX() - 8.5) * 100;
+        }
+        return 1000000;
     }
 
     public static double calculateFromPed(Vector vector, Ped ped) {
@@ -157,11 +195,15 @@ public class CustomizeUtil {
 
     public static boolean canMove(Vector target) {
         // 判断是否能移动到指定位置
-        if (target.getX() <= 17 && target.getX() >= 5
-                && target.getY() >= 8 && target.getY() <= 20) return false;
-        if (target.getX() <= 20 && target.getX() >= 5
-                && target.getY() <= 5) return false;
-        if (target.getY() <= 20 && target.getX() >= 20) return false;
+        if (target.getX() <= 5 && target.getY() >= 6.5) {
+            return false;
+        }
+        if (target.getY() >= 11.6) return false;
+        if (target.getX() >= 8.5 && target.getY() <= 11.6
+                && target.getY() >= 6.5) return false;
+        if (target.getY() <= 5) return false;
+        if (target.getX() <= 7 && target.getX() >= 6.5
+                && target.getY() <= 10.1) return false;
         return true;
     }
 

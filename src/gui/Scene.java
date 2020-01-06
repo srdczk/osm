@@ -43,6 +43,7 @@ public class Scene implements Initializable {
     }
 
     private void initScene() {
+
         graphicsContext = canvas.getGraphicsContext2D();
         canvas.setScaleY(-1);
         canvas.setScaleX(1);
@@ -51,7 +52,7 @@ public class Scene implements Initializable {
     }
 
     private void initLoop() {
-        Duration duration = Duration.millis(10);
+        Duration duration = Duration.millis(100);
         KeyFrame frame = getNextKeyFrame(duration);
         timeline = new Timeline();
         timeline.setCycleCount(Animation.INDEFINITE);
@@ -63,6 +64,7 @@ public class Scene implements Initializable {
     private KeyFrame getNextKeyFrame(Duration duration) {
         return new KeyFrame(duration, e -> {
             removeAll();
+            space.randomAddPed();
             for (Wall wall : space.getWalls()) drawWall(graphicsContext, wall);
             for (Ped ped : space.getPeds()) { drawPed(graphicsContext, ped); }
             for (Ped ped : space.getPeds()) {
