@@ -4,6 +4,8 @@ package model;
 
 import params.Config;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import static util.CustomizeUtil.*;
@@ -16,6 +18,8 @@ public class Space {
 
     private List<Wall> walls;
 
+    private HashMap<Integer, Floor> map = new HashMap<>();
+
     public Space() {
         // 只需要插入和 <>
         peds = new LinkedList<>();
@@ -23,41 +27,55 @@ public class Space {
     }
 
     public Space init() {
-        add(new Wall(3.5, 5, 6.5, 5));
-        add(new Wall(6.5, 5, 6.5, 10.1));
-        add(new Wall(6.5, 10.1, 7.0, 10.1));
-        add(new Wall(7.0, 10.1, 7.0, 6.5));
-        add(new Wall(3.5, 6.5, 5.0, 6.5));
-        add(new Wall(5.0, 6.5, 5.0, 11.6));
-        add(new Wall(5.0, 11.6, 8.5, 11.6));
-        add(new Wall(8.5, 11.6, 8.5, 5));
-        add(new Wall(8.5, 5, 7, 5));
-        add(new Wall(10, 5, 10, 11.6));
-        add(new Wall(10, 11.6, 13.5, 11.6));
-        add(new Wall(13.5, 11.6, 13.5, 6.5));
-        add(new Wall(10, 5, 13.5, 5));
-        add(new Wall(11.5, 6.5, 11.5, 10.1));
-        add(new Wall(11.5, 10.1, 12.0, 10.1));
-        add(new Wall(12.0, 10.1, 12.0, 5));
-        add(new Wall(11.5, 6.5, 12.0, 6.5));
-        for (int i = 0; i < 5; i++) {
+        if (Config.maxFloor >= 10) Config.SCALE = 14;
+        else Config.SCALE = 14 + (10 - Config.maxFloor) * 2;
+        // 通过 maxFloor <---> 控制
+        if (Config.maxFloor > 40) {
+            Config.WIDTH = 0;
+            Config.HEIGHT = 0;
+        } else if (Config.maxFloor > 30) {
+            Config.WIDTH = 0;
+            Config.HEIGHT = 7;
+        } else if (Config.maxFloor > 20) {
+            Config.WIDTH = 0;
+            Config.HEIGHT = 9;
+        } else if (Config.maxFloor > 10) {
+            Config.WIDTH = 0;
+            Config.HEIGHT = 15;
+        } else {
+            Config.WIDTH = (Config.maxFloor - 10) * 5;
+            Config.HEIGHT = 20 + (Config.maxFloor - 10) * 2;
+        }
+        for (int i = 0; i < Config.maxFloor; i++) {
+            if (i == 0) map.put(i, new Floor(0, true));
+            else map.put(i, new Floor(i, false));
+        }
+        for (int i = 0; i < Config.maxFloor; i++) {
+            addRandomPed(i);
+        }
+        // 每层随机加入 15 个人 --->
+        return this;
+    }
+    private void addRandomPed(int floor) {
+        HashSet<Ped> peds = map.get(floor).getPeds();
+        while (peds.size() < 15) {
+            double x = 0.2 + Math.random() * 1.1, y = -1.3 + Math.random() * 1.1;
             boolean pd = true;
-            double x = Math.random() * 1.1 + 3.7
-                    , y = Math.random() * 1.1 + 5.2;
             while (pd) {
                 pd = false;
                 for (Ped ped : peds) {
-                    if (ped.getCurPos().distanceTo(new Vector(x, y)) < Config.R * 2.0) {
+                    if (getDistance(ped.getCurPos().getX(), ped.getCurPos().getY(),
+                            x, y) < 0.4) {
+                        x = 0.2 + Math.random() * 1.1;
+                        y = -1.3 + Math.random() * 1.1;
                         pd = true;
-                        x = Math.random() * 1.1 + 3.7;
-                        y = Math.random() * 1.1 + 5.2;
                         break;
                     }
                 }
             }
-            add(new Ped(Config.pedId++, x, y, Config.stepLen, Config.R, 1, 0, this));
+            Vector sub = calXY(floor);
+            peds.add(new Ped(Config.pedId++, x + sub.getX(), y + sub.getY(), Config.stepLen, Config.R, 1, 0, this, floor));
         }
-        return this;
     }
 
     public void add(Ped ped) {
@@ -68,29 +86,15 @@ public class Space {
         walls.add(wall);
     }
 
-    public void randomAddPed() {
-        boolean pd = true;
-        double x = Math.random() * 1.1 + 3.7
-                , y = Math.random() * 1.1 + 5.2;
-        while (pd) {
-            pd = false;
-            for (Ped ped : peds) {
-                if (ped.getCurPos().distanceTo(new Vector(x, y)) < Config.R * 2.0) {
-                    pd = true;
-                    x = Math.random() * 1.1 + 3.7;
-                    y = Math.random() * 1.1 + 5.2;
-                    break;
-                }
-            }
-        }
-        add(new Ped(Config.pedId++, x, y, Config.stepLen, Config.R, 1, 0, this));
-    }
-
     public List<Wall> getWalls() {
         return walls;
     }
 
     public List<Ped> getPeds() {
         return peds;
+    }
+
+    public HashMap<Integer, Floor> getMap() {
+        return map;
     }
 }

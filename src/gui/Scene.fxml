@@ -9,13 +9,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Scene">
-    <Canvas fx:id="canvas" height="600.0" nodeOrientation="INHERIT" width="800.0">
+    <Canvas fx:id="canvas" height="800.0" nodeOrientation="INHERIT" width="800.0">
     </Canvas>
     <HBox alignment="TOP_CENTER" spacing="10">
         <children>
-         <Button mnemonicParsing="false" text="Button" />
             <Button fx:id="start" onAction="#onStart">Start</Button>
-            <Button fx:id="print" onAction="#onPrint">Print</Button>
+            <Button fx:id="init" onAction="#onInit" text="Init">Init</Button>
             <TextField fx:id="floor" prefHeight="16.0" prefWidth="52.0" />
         </children>
     </HBox>

@@ -14,4 +14,14 @@ public class StringUtil {
         return true;
     }
 
+    public static int stringToInt(String s) {
+        int res;
+        try {
+            res = Integer.valueOf(s);
+        } catch (Exception e) {
+            return -1;
+        }
+        return res;
+    }
+
 }

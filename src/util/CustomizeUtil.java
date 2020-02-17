@@ -2,12 +2,10 @@ package util;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import model.Ped;
-import model.Space;
-import model.Vector;
-import model.Wall;
+import model.*;
 import params.Config;
 
+import java.awt.image.ByteLookupTable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +16,14 @@ public class CustomizeUtil {
     public static boolean isZero(double d) {
         return Math.abs(d) <= 1e-6;
     }
+
+    public static void drawFloor(GraphicsContext graphicsContext, Floor floor) {
+        for (Wall wall : floor.getWalls()) drawWall(graphicsContext, wall);
+        for (Wall wall : floor.getVirtual()) drawWall(graphicsContext, wall);
+        drawText(graphicsContext, String.valueOf(floor.getFloor() + 1), floor.getStartX() + 2, floor.getStartY() - 0.5);
+    }
+
+    public static double MAX_FIELD = 1500000;
 
     public static boolean isSameVector(Vector a, Vector b) {
         return isZero(a.getX() - b.getX())
@@ -31,7 +37,17 @@ public class CustomizeUtil {
                 , SCALE * wall.getEnd().getY() + SCALE * HEIGHT);
     }
 
+    public static void drawText(GraphicsContext graphicsContext, String text, double x, double y) {
+        graphicsContext.strokeText(text, SCALE * WIDTH + x * SCALE, SCALE * HEIGHT + y * SCALE);
+    }
+
+    public static void turnNext(Ped ped) {
+        ped.setFloor(ped.getFloor() - 1);
+
+    }
+
     public static void drawPed(GraphicsContext graphicsContext, Ped ped) {
+        if (ped.isGetTarget()) return;
         graphicsContext.setFill(Color.RED);
         graphicsContext.fillOval(SCALE * WIDTH + (ped.getCurPos().getX() - ped.getRadius()) * SCALE
                 , SCALE * HEIGHT + (ped.getCurPos().getY() - ped.getRadius()) * SCALE
@@ -115,6 +131,229 @@ public class CustomizeUtil {
             }
         }
         return res;
+    }
+
+    public static double getField(Vector des, Vector now, int floor, boolean isStart) {
+        // 根据行人所在的位置判断场域值的大小
+        Block desBlock = block(des, floor);
+        Block nowBlock = block(now, floor);
+        if (isStart && floor == 0) {
+            // 如果是起始位置
+            switch (desBlock) {
+                case START_BLOCK:
+                    if (nowBlock != Block.START_BLOCK) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case FIRST_CORNER:
+                    // 是 start, 不作为转角
+                    if (nowBlock != Block.START_BLOCK && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case FIRST_STAIR:
+                    if (nowBlock != Block.FIRST_STAIR && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case SECOND_CORNER:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_STAIR) return MAX_FIELD;
+                    // 计算转角场域的值
+                    int x = (int) ((des.getY() - 5.1) * 10), y = (int) ((1.5 - des.getX()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1400000 + Space.sff[x][y] * 50;
+                case FIRST_INTERVAL:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_INTERVAL) return MAX_FIELD;
+                    else return 1400000 - (des.getX() - 1.5) * 100;
+                case THIRD_CORNER:
+                    if (nowBlock != Block.FIRST_INTERVAL && nowBlock != Block.THIRD_CORNER) return MAX_FIELD;
+                    x = (int) ((des.getX() - 2.0) * 10);
+                    y = (int) ((des.getY() - 5.1) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1300000 + Space.sff[x][y] * 50;
+                case SECOND_STAIR:
+                    if (nowBlock != Block.THIRD_CORNER && nowBlock != Block.SECOND_STAIR) return MAX_FIELD;
+                    else return 1300000 - (5.1 - des.getY()) * 100;
+                case FOURTH_CORNER:
+                    if (nowBlock != Block.SECOND_STAIR && nowBlock != Block.FOURTH_CORNER) return MAX_FIELD;
+                    x = (int) ((1.5 - des.getY()) * 10);
+                    y = (int) ((3.5 - des.getX()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1200000 + Space.sff[x][y] * 50;
+                case SECOND_INTERVAL:
+                    return MAX_FIELD;
+                case EXIT_BLOCK:
+                    if (nowBlock != Block.FOURTH_CORNER && nowBlock != Block.EXIT_BLOCK) return MAX_FIELD;
+                    else return 1200000 - (des.getX() - 3.5) * 100;
+                case OUT_OF_SIZE:
+                    return MAX_FIELD;
+            }
+        } else if (!isStart && floor == 0) {
+            switch (desBlock) {
+                case START_BLOCK:
+                    // 不能够进入 START_BLOCK
+                    return MAX_FIELD;
+                case FIRST_CORNER:
+                    if (nowBlock != Block.FIRST_CORNER && nowBlock != Block.SECOND_INTERVAL) return MAX_FIELD;
+                    int x = (int) ((1.5 - des.getX()) * 10), y = (int) ((1.5 - des.getY()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1400000 + Space.sff[x][y] * 50;
+                case FIRST_STAIR:
+                    if (nowBlock != Block.FIRST_STAIR && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return 1400000 - (des.getY() - 1.5) * 100;
+                case SECOND_CORNER:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_STAIR) return MAX_FIELD;
+                    x = (int) ((des.getY() - 5.1) * 10);
+                    y = (int) ((1.5 - des.getX()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1300000 + Space.sff[x][y] * 50;
+                    // 计算转角场域的值
+                case FIRST_INTERVAL:
+                    if (nowBlock != Block.FIRST_INTERVAL && nowBlock != Block.SECOND_CORNER) return MAX_FIELD;
+                    return 1300000 - (des.getX() - 1.5) * 100;
+                case THIRD_CORNER:
+                    if (nowBlock != Block.THIRD_CORNER && nowBlock != Block.FIRST_INTERVAL) return MAX_FIELD;
+                    x = (int) ((des.getX() - 2.0) * 10);
+                    y = (int) ((des.getY() - 5.1) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1200000 + Space.sff[x][y] * 50;
+                case SECOND_STAIR:
+                    if (nowBlock != Block.SECOND_STAIR && nowBlock != Block.THIRD_CORNER) return MAX_FIELD;
+                    else return 1200000 - (5.1 - des.getY()) * 100;
+                case FOURTH_CORNER:
+                    // 进入 FOURTH_CORNER
+                    if (nowBlock != Block.FOURTH_CORNER && nowBlock != Block.SECOND_STAIR) return MAX_FIELD;
+                    x = (int) ((1.5 - des.getY()) * 10);
+                    y = (int) ((3.5 - des.getX()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1100000 + Space.sff[x][y] * 50;
+                case SECOND_INTERVAL:
+                    if (nowBlock != Block.SECOND_INTERVAL) return MAX_FIELD;
+                    return MAX_FIELD - (2.0 - des.getX()) * 100;
+                case EXIT_BLOCK:
+                    if (nowBlock != Block.EXIT_BLOCK && nowBlock != Block.FOURTH_CORNER) return MAX_FIELD;
+                    return 1100000 - (des.getX() - 3.5) * 100;
+                case OUT_OF_SIZE:
+                    return MAX_FIELD;
+            }
+        } else if (isStart) {
+            switch (desBlock) {
+                case START_BLOCK:
+                    if (nowBlock != Block.START_BLOCK) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case FIRST_CORNER:
+                    // 是 start, 不作为转角
+                    if (nowBlock != Block.START_BLOCK && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case FIRST_STAIR:
+                    if (nowBlock != Block.FIRST_STAIR && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return MAX_FIELD - (des.getY() + 1.5) * 100;
+                case SECOND_CORNER:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_STAIR) {
+                        System.out.println("NIMA");
+                        return MAX_FIELD;
+                    }
+                    // 计算转角场域的值
+                    int x = (int) ((des.getY() - 5.1) * 10), y = (int) ((1.5 - des.getX()) * 10);
+                    System.out.println(x + "," + y);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1400000 + Space.sff[x][y] * 50;
+                case FIRST_INTERVAL:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_INTERVAL) {
+                        return MAX_FIELD;
+                    } else {
+                        return 1400000 - (des.getX() - 1.5) * 100;
+                    }
+                case THIRD_CORNER:
+                    if (nowBlock != Block.FIRST_INTERVAL && nowBlock != Block.THIRD_CORNER) {
+                        return MAX_FIELD;
+                    }
+                    x = (int) ((des.getX() - 2.0) * 10);
+                    y = (int) ((des.getY() - 5.1) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1300000 + Space.sff[x][y] * 50;
+                case SECOND_STAIR:
+                    if (nowBlock != Block.THIRD_CORNER && nowBlock != Block.SECOND_STAIR) return MAX_FIELD;
+                    else return 1300000 - (5.1 - des.getY()) * 100;
+                case FOURTH_CORNER:
+                    if (nowBlock != Block.SECOND_STAIR && nowBlock != Block.FOURTH_CORNER) return MAX_FIELD;
+                    x = (int) ((1.5 - des.getY()) * 10);
+                    y = (int) ((des.getX() - 2.0) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1200000 + Space.sff[x][y] * 50;
+                case SECOND_INTERVAL:
+                    if (nowBlock != Block.FOURTH_CORNER && nowBlock != Block.SECOND_INTERVAL) return MAX_FIELD;
+                    if (nowBlock == Block.FOURTH_CORNER) return 1200000 - (2.0 - des.getX()) * 100;
+                    return MAX_FIELD - (2.0 - des.getX()) * 100;
+                case EXIT_BLOCK:
+                    return MAX_FIELD;
+                case OUT_OF_SIZE:
+                    return MAX_FIELD;
+            }
+        } else {
+            // floor != 0 && !isStart
+            switch (desBlock) {
+                case START_BLOCK:
+                    // 不能够进入 START_BLOCK
+                    return MAX_FIELD;
+                case FIRST_CORNER:
+                    if (nowBlock != Block.FIRST_CORNER && nowBlock != Block.FIRST_STAIR.SECOND_INTERVAL)
+                        return MAX_FIELD;
+                    int x = (int) ((1.5 - des.getX()) * 10), y = (int) ((1.5 - des.getY()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1400000 + Space.sff[x][y] * 50;
+                case FIRST_STAIR:
+                    if (nowBlock != Block.FIRST_STAIR && nowBlock != Block.FIRST_CORNER) return MAX_FIELD;
+                    else return 1400000 - (des.getY() - 1.5) * 100;
+                case SECOND_CORNER:
+                    if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_STAIR) return MAX_FIELD;
+                    x = (int) ((des.getY() - 5.1) * 10);
+                    y = (int) ((1.5 - des.getX()) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1300000 + Space.sff[x][y] * 50;
+                // 计算转角场域的值
+                case FIRST_INTERVAL:
+                    if (nowBlock != Block.FIRST_INTERVAL && nowBlock != Block.SECOND_CORNER) return MAX_FIELD;
+                    return 1300000 - (des.getX() - 1.5) * 100;
+                case THIRD_CORNER:
+                    if (nowBlock != Block.THIRD_CORNER && nowBlock != Block.FIRST_INTERVAL) return MAX_FIELD;
+                    x = (int) ((des.getX() - 2.0) * 10);
+                    y = (int) ((des.getY() - 5.1) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1200000 + Space.sff[x][y] * 50;
+                case SECOND_STAIR:
+                    if (nowBlock != Block.SECOND_STAIR && nowBlock != Block.THIRD_CORNER) return MAX_FIELD;
+                    else return 1200000 - (5.1 - des.getY()) * 100;
+                case FOURTH_CORNER:
+                    // 进入 FOURTH_CORNER
+                    if (nowBlock != Block.FOURTH_CORNER && nowBlock != Block.SECOND_STAIR) return MAX_FIELD;
+                    x = (int) ((1.5 - des.getY()) * 10);
+                    y = (int) ((des.getX() - 2.0) * 10);
+                    if (x > 14 || y > 14) return MAX_FIELD;
+                    return 1100000 + Space.sff[x][y] * 50;
+                case SECOND_INTERVAL:
+                    if (nowBlock != Block.FOURTH_CORNER && nowBlock != Block.SECOND_INTERVAL) return MAX_FIELD;
+                    if (nowBlock == Block.FOURTH_CORNER) return 1100000 - (2.0 - des.getX()) * 100;
+                    return MAX_FIELD - (2.0 - des.getX()) * 100;
+                case EXIT_BLOCK:
+                    return MAX_FIELD;
+                case OUT_OF_SIZE:
+                    return MAX_FIELD;
+            }
+        }
+        return MAX_FIELD;
+    }
+    public static Block block(Vector vector, int floor) {
+        double x = vector.getX(), y = vector.getY();
+        if (x > 0 && x < 1.5 && y < 0 && y > -1.5) return Block.START_BLOCK;
+        else if (x > 0 && x < 1.5 && y >= 0 && y < 1.5) return Block.FIRST_CORNER;
+        else if (x > 0 && x < 1.5 && y >= 1.5 && y < 5.1) return Block.FIRST_STAIR;
+        else if (x > 0 && x < 1.5 && y >= 5.1 && y < 6.6) return Block.SECOND_CORNER;
+        else if (x >= 1.5 && x < 2.0 && y > 5.1 && y < 6.6) return Block.FIRST_INTERVAL;
+        else if (x >= 2.0 && x < 3.5 && y > 5.1 && y < 6.6) return Block.THIRD_CORNER;
+        else if (x > 2.0 && x < 3.5 && y <= 5.1 && y > 1.5) return Block.SECOND_STAIR;
+        else if (x > 2.0 && x < 3.5 && y <= 1.5 && y > 0) return Block.FOURTH_CORNER;
+        else if (x >= 1.5 && x <= 2.0 && y > 0 && y < 1.5) return Block.SECOND_INTERVAL;
+        else if (floor == 0 && x >= 3.5 && y > 0 && y < 1.5) return Block.EXIT_BLOCK;
+        return Block.OUT_OF_SIZE;
+    }
+
+    public static double getDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
     public static double getField(Vector vector) {
@@ -234,24 +473,14 @@ public class CustomizeUtil {
         } else return 0;
     }
 
-    public static boolean canMove(Vector cur, Vector target) {
-        // pd Enum <--> floor
-        if (target.getY() >= 6.5 && target.getX() <= 5) return false;
-        if (target.getY() >= 11.6) return false;
-        if (target.getY() <= 5) return false;
-        if (target.getX() >= 8.5 && target.getX() <= 10) return false;
-        if (target.getX() <= 7.0 && target.getX() >= 6.5
-                && target.getY() <= 10.1 && target.getY() >= 6.5) return false;
-        // 判断 target
-        if ((cur.getX() >= 5 && cur.getX() <= 6.5)
-                && (target.getX() >= 6.5 && target.getY() <= 10.1)) return false;
-        if ((cur.getX() >= 6.5 && cur.getX() <= 7.0 && cur.getY() >= 5 && cur.getY() <= 6.5)
-                && (target.getX() <= 6.5)) return false;
-        if ((cur.getX() <= 12.0 && cur.getX() >= 11.5 && cur.getY() <= 6.5 && cur.getY() >= 5.0)
-                && (target.getX() >= 12.0)) return false;
-        if (target.getY() <= 10.1 && target.getY() >= 6.5
-                && target.getX() <= 12.0 && target.getX() >= 11.5) return false;
-        if (target.getY() >= 6.5 && target.getX() >= 13.5) return false;
+
+    public static Vector calXY(int floor) {
+        int x = floor / 10, y = floor % 10;
+        return new Vector(5 + (9 - y) * (5), 5 + x * (10));
+    }
+
+    public static boolean canMove(Vector des, Vector now, int floor, boolean isStart) {
+
         return true;
     }
 

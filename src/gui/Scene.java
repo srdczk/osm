@@ -10,15 +10,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
+import model.Floor;
 import model.Ped;
 import model.Space;
-import model.Wall;
 import params.Config;
+import util.CustomizeUtil;
+import util.StringUtil;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static util.CustomizeUtil.*;
 
 public class Scene implements Initializable {
 
@@ -26,7 +26,7 @@ public class Scene implements Initializable {
     private Canvas canvas;
 
     @FXML
-    private Button start, print;
+    private Button start, init;
 
     @FXML
     private TextField floor;
@@ -45,8 +45,8 @@ public class Scene implements Initializable {
     private void initScene() {
 
         graphicsContext = canvas.getGraphicsContext2D();
-        canvas.setScaleY(-1);
-        canvas.setScaleX(1);
+//        canvas.setScaleY(-1);
+//        canvas.setScaleX(1);
         space = new Space().init();
         initLoop();
     }
@@ -64,12 +64,17 @@ public class Scene implements Initializable {
     private KeyFrame getNextKeyFrame(Duration duration) {
         return new KeyFrame(duration, e -> {
             removeAll();
-            space.randomAddPed();
-            for (Wall wall : space.getWalls()) drawWall(graphicsContext, wall);
-            for (Ped ped : space.getPeds()) { drawPed(graphicsContext, ped); }
-            for (Ped ped : space.getPeds()) {
-                ped.updateDir();
-                ped.move();
+            for (Floor floor : space.getMap().values()) {
+                CustomizeUtil.drawFloor(graphicsContext, floor);
+                try {
+                    for (Ped ped : floor.getPeds()) {
+                        ped.updateDir();
+                        ped.move();
+                        CustomizeUtil.drawPed(graphicsContext, ped);
+                    }
+                } catch (Exception p) {
+                    p.printStackTrace();
+                }
             }
         });
     }
@@ -89,8 +94,12 @@ public class Scene implements Initializable {
         }
     }
 
-    public void onPrint() {
-        System.out.println("NIASU");
+    public void onInit() {
+        int maxFloor = StringUtil.stringToInt(floor.getText());
+        if (maxFloor < 1) maxFloor = 1;
+        else if (maxFloor > 50) maxFloor = 50;
+        Config.maxFloor = maxFloor;
+        space = new Space().init();
     }
 
 }
