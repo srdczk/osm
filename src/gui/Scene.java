@@ -66,15 +66,18 @@ public class Scene implements Initializable {
             removeAll();
             for (Floor floor : space.getMap().values()) {
                 CustomizeUtil.drawFloor(graphicsContext, floor);
-                try {
-                    for (Ped ped : floor.getPeds()) {
-                        ped.updateDir();
-                        ped.move();
-                        CustomizeUtil.drawPed(graphicsContext, ped);
-                    }
-                } catch (Exception p) {
-                    p.printStackTrace();
+                for (Ped ped : floor.getPeds()) {
+                    ped.updateDir();
+                    ped.move();
+                    CustomizeUtil.drawPed(graphicsContext, ped);
                 }
+                for (Ped ped : floor.wantRemove) {
+                    floor.removePed(ped);
+                    if (floor.getFloor() > 0) {
+                        space.getMap().get(floor.getFloor() - 1).addPed(ped);
+                    }
+                }
+                floor.wantRemove.clear();
             }
         });
     }

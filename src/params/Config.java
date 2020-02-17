@@ -1,9 +1,5 @@
 package params;
 
-import model.Ped;
-
-import java.util.HashMap;
-
 public class Config {
 
     public static int maxFloor = 30;

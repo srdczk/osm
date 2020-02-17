@@ -13,6 +13,8 @@ public class Floor {
 
     private HashSet<Ped> peds = new HashSet<>();
 
+    public HashSet<Ped> wantRemove = new HashSet<>();
+
     private List<Wall> walls = new ArrayList<>();
     // 虚拟墙面, 用来绘制 阶梯 <---> 计算场域值的大小
     private List<Wall> virtual = new ArrayList<>();
@@ -41,6 +43,11 @@ public class Floor {
         } else {
             walls.add(new Wall(startX + 3.5, startY + 6.6, startX + 3.5, startY));
             walls.add(new Wall(startX + 1.5, startY, startX + 3.5, startY));
+        }
+        virtual.add(new Wall(startX + 2.0, startY, startX + 2.0, startY + 1.5));
+        for (int i = 0; i < 13; i++) {
+            virtual.add(new Wall(startX, startY + 1.5 + 0.3 * i, startX + 1.5, startY + 1.5 + 0.3 * i));
+            virtual.add(new Wall(startX + 2.0, startY + 1.5 + 0.3 * i, startX + 3.5, startY + 1.5 + 0.3 * i));
         }
     }
 

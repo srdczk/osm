@@ -48,7 +48,9 @@ public class CustomizeUtil {
 
     public static void drawPed(GraphicsContext graphicsContext, Ped ped) {
         if (ped.isGetTarget()) return;
-        graphicsContext.setFill(Color.RED);
+        double[] rgb = ped.getRgb();
+        graphicsContext.setFill(ped.getColor());
+//        graphicsContext.setFill(Color.RED);
         graphicsContext.fillOval(SCALE * WIDTH + (ped.getCurPos().getX() - ped.getRadius()) * SCALE
                 , SCALE * HEIGHT + (ped.getCurPos().getY() - ped.getRadius()) * SCALE
                 , 2 * ped.getRadius() * SCALE
@@ -244,12 +246,12 @@ public class CustomizeUtil {
                     else return MAX_FIELD - (des.getY() + 1.5) * 100;
                 case SECOND_CORNER:
                     if (nowBlock != Block.SECOND_CORNER && nowBlock != Block.FIRST_STAIR) {
-                        System.out.println("NIMA");
+//                        System.out.println("NIMA");
                         return MAX_FIELD;
                     }
                     // 计算转角场域的值
                     int x = (int) ((des.getY() - 5.1) * 10), y = (int) ((1.5 - des.getX()) * 10);
-                    System.out.println(x + "," + y);
+//                    System.out.println(x + "," + y);
                     if (x > 14 || y > 14) return MAX_FIELD;
                     return 1400000 + Space.sff[x][y] * 50;
                 case FIRST_INTERVAL:

@@ -2,6 +2,9 @@ package model;
 
 // Created by srdczk on 2020/1/1
 
+import javafx.scene.paint.Color;
+import params.Config;
+
 import static util.CustomizeUtil.*;
 import static params.Config.*;
 
@@ -9,6 +12,8 @@ public class Ped {
 
     // 行人的楼层数
     private int floor;
+
+    private Color color;
 
     // 判断是否是 起始楼层 进入汇流 的人群
     private boolean isStart;
@@ -42,9 +47,17 @@ public class Ped {
         isGetTarget = false;
         isStart = true;
         this.floor = floor;
+        // 不同楼层的人用不同的颜色来表示
+        int i = floor % 3;
+        if (i == 0) color = Color.RED;
+        else if (i == 1) color = Color.GREEN;
+        else color = Color.BLUE;
     }
 
 
+    public Color getColor() {
+        return color;
+    }
 
     public void move() {
         Vector target = curPos.newAdd(dir.newMultiply(stepLen));
@@ -59,8 +72,7 @@ public class Ped {
             Vector newSub = calXY(--floor);
             isStart = false;
             curPos = newSub.add(des);
-            space.getMap().get(floor + 1).removePed(this);
-            space.getMap().get(floor).addPed(this);
+            space.getMap().get(floor + 1).wantRemove.add(this);
         } else {
             curPos = target;
         }

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Scene">
-    <Canvas fx:id="canvas" height="800.0" nodeOrientation="INHERIT" width="800.0">
+    <Canvas fx:id="canvas" height="700.0" nodeOrientation="INHERIT" width="800.0">
     </Canvas>
     <HBox alignment="TOP_CENTER" spacing="10">
         <children>
